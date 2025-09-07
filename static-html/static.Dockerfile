@@ -1,11 +1,20 @@
 #FROM imagename:tag
 FROM python:latest
 
+#Sets working directory inside container 
+WORKDIR /app 
+#Create directory inside container
+# RUN mkdir -p /static_folder
+# #Copy files from local to container
+# COPY ./static-html /static_folder
+COPY ./src .
+#Run commands inside container can be sites from react, next.js, angular, flask, django etc
+#RUN echo "Hello, Docker!" > index.html
 #docker init
 #docker build -f Dockerfile -t <imagename> .
 #docker run -it <imagename>
 
-#Connect to Docker Hub
+#Connect to Docker Hub for development
 #for easy access do:
     #docker login --> docker build -f Dockerfile -t <username>/<imagename>:tag . 
     #docker push <username>/<imagename>:tag
