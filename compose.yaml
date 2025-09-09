@@ -25,6 +25,20 @@ services: #dockers compose expects this -> to run, we can do "docker compose up"
         # - action: sync #sync changes from host to container without restarting
         #   path: backend/src/ #path to watch for changes
         #   target: /app #path inside the container to sync changes to
+  #DATBASE_URL=postgresql://user:password@service:port/dbname
+  db:
+    image: postgres:17.5
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=dbpassword
+      - POSTGRES_DB=devdb
+    # env_file:
+    #   - .env.sample-db
+    volumes:
+      - dc_managed_db_volume:/var/lib/postgresql/data #mounting named volume to container directory for data persistence
+
   static-html: #custom key name for the service like <frontend> <backend> <db>
     #image: python:latest #docker image name -> <imagename>:<tag>
     build:
@@ -42,3 +56,6 @@ services: #dockers compose expects this -> to run, we can do "docker compose up"
   #     - 8001:8000 #host:container
   #     - 1001:8000 #another port mapping
   #   command: python3 -m http.server 8000 #command to run inside the container
+
+volumes:
+  dc_managed_db_volume: #named volume for database persistence, addt: dont use docker for backend bc volume is also going to b deleted if we delete the backend service

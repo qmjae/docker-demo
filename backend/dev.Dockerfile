@@ -28,4 +28,8 @@ COPY ./src .
 #always remember to expose ports
 #docker run -it -p <host_port>:<container_port> <imagename>
 
-CMD ["python", "-m", "http.server", "8000"]
+# Expose the port that FastAPI will run on
+EXPOSE 8000
+
+# Run FastAPI application
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
