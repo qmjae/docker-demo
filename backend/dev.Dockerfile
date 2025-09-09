@@ -1,6 +1,8 @@
 #FROM imagename:tag
 FROM python:latest
 
+RUN apt-get update && apt-get install -y curl
+
 #Create python virtual environment, isolate local python from system-level python
 RUN python -m venv /opt/venv/
 ENV PATH=/opt/venv/bin:$PATH
@@ -29,7 +31,8 @@ COPY ./src .
 #docker run -it -p <host_port>:<container_port> <imagename>
 
 # Expose the port that FastAPI will run on
-EXPOSE 8000
+#EXPOSE 8000
 
 # Run FastAPI application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["python", "-m", "http.server", "8000"]

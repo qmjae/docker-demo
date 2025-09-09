@@ -8,12 +8,14 @@ services: #dockers compose expects this -> to run, we can do "docker compose up"
       - 8080:8000 #host:container
     command: uvicorn main:app --host 0.0.0.0 --port 8000 #command to run inside the container
     environment:
-      - PORT=8999
+      - PORT=8000
       - PROJECT=DOCKERHELLO
     env_file:
       - .env.sample
     volumes:
       - ./backend/src:/app
+    depends_on:
+      - db #service dependency, wait for db service to be ready before starting this service
     develop: #for docker compose dev mode
       watch: #list of paths to watch for changes
         - action: rebuild #action to take when a change is detected
@@ -39,17 +41,17 @@ services: #dockers compose expects this -> to run, we can do "docker compose up"
     volumes:
       - dc_managed_db_volume:/var/lib/postgresql/data #mounting named volume to container directory for data persistence
 
-  static-html: #custom key name for the service like <frontend> <backend> <db>
-    #image: python:latest #docker image name -> <imagename>:<tag>
-    build:
-      context: ./static-html #path to the directory containing the Dockerfile
-      dockerfile: static.Dockerfile #name of the Dockerfile (if not named Dockerfile)
-    ports: #port mapping from host to container
-      - 8000:8000 #host:container
-      - 1000:8000 #another port mapping
-    command: python3 -m http.server 8000 #command to run inside the container
-    volumes:
-      - ./static-html/src:/app #mounting local directory to container directory, for real-time updates
+  # static-html: #custom key name for the service like <frontend> <backend> <db>
+  #   #image: python:latest #docker image name -> <imagename>:<tag>
+  #   build:
+  #     context: ./static-html #path to the directory containing the Dockerfile
+  #     dockerfile: static.Dockerfile #name of the Dockerfile (if not named Dockerfile)
+  #   ports: #port mapping from host to container
+  #     - 8000:8000 #host:container
+  #     - 1000:8000 #another port mapping
+  #   command: python3 -m http.server 8000 #command to run inside the container
+  #   volumes:
+  #     - ./static-html/src:/app #mounting local directory to container directory, for real-time updates
   # app2: #custom key name for the service like <frontend> <backend> <db>
   #   image: python:latest #docker image name -> <imagename>:<tag>
   #   ports: #port mapping from host to container
