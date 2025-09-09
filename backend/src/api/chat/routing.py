@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 from api.db import get_session
+from api.ai.schemas import EmailMessageSchema
+from api.ai.services import generate_email_msg
 from .models import ChatMessagePayload, ChatMessage
 
 router = APIRouter()
@@ -15,8 +17,8 @@ def chat_list_messages(session: Session = Depends(get_session)):
     results = session.exec(query).fetchall()[:10] #fetch all chat messages
     return results
 
-#curl -X POST -d '{"message": "Hello"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
-@router.post("/", response_model=ChatMessage)
+#curl -X POST -d '{"message": "Give me a recipe for an adobo"}' -H "Content-Type: application/json" http://localhost:8080/api/chats/
+@router.post("/", response_model=EmailMessageSchema)
 def chat_create_message(
     payload: ChatMessagePayload,
     session: Session = Depends(get_session)
@@ -27,4 +29,6 @@ def chat_create_message(
     session.commit()
     session.refresh(obj)
 
-    return obj
+    response = generate_email_msg(payload.message)
+
+    return response
